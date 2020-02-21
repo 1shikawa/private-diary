@@ -1,0 +1,56 @@
+version: "3"
+
+services:
+  app:
+    container_name: diary-django
+    build: ./app
+    command: >
+     bash -c "python manage.py makemigrations
+     && python manage.py migrate
+     && python manage.py runserver 0.0.0.0:8000"
+    #  && python manage.py collectstatic --noinput
+    #  && gunicorn private_diary.wsgi -b 0.0.0.0:8000"
+    # environment:
+    #   - DJANGO_SETTINGS_MODULE=techfinchart.local_settings
+    env_file: .env
+    volumes:
+      - .:/code
+      - ./static:/opt/static
+    tty: true
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+
+  # web:
+  #   container_name: diary-nginx
+  #   restart: always
+  #   build: ./nginx
+  #   ports:
+  #     - "80:80"
+  #   tty: true
+  #   volumes:
+  #     # - "./nginx/:/etc/nginx/"
+  #     - "./static:/opt/static/"
+  #   depends_on:
+  #     - app
+
+  db:
+    container_name: diary-db
+    image: mysql:5.7
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: diary
+      MYSQL_PASSWORD: diary
+      TZ: "Asia/Tokyo"
+    tty: true
+    volumes:
+      - db_volume:/var/lib/mysql
+      - ./mysql/sql:/docker-entrypoint-initdb.d
+
+volumes:
+  db_volume:
+    driver: local
+  static:
