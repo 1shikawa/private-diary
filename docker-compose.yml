@@ -16,6 +16,7 @@ services:
     volumes:
       - .:/code
       - ./static:/opt/static
+      - ./media:/opt/media
     tty: true
     ports:
       - 8000:8000
@@ -54,3 +55,4 @@ volumes:
   db_volume:
     driver: local
   static:
+  media:

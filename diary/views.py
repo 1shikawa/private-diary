@@ -1,4 +1,5 @@
 import logging
+import datetime
 
 from django.shortcuts import render
 from django.urls import reverse_lazy
@@ -7,6 +8,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView,FormView
 from .models import Diary
 from .forms import InquiryForm, DiaryCreateForm
+from django.contrib.auth.decorators import login_required
+import subprocess
 
 logger = logging.getLogger(__name__)
 # Create your views here.
@@ -84,4 +87,18 @@ class DiaryDeleteView(LoginRequiredMixin, DeleteView):
 
     def delete(self, request, *args, **kwargs):
         messages.success(self.request, '日記を削除しました。')
-        return super().delete(request,*args,**kwargs)
+        return super().delete(request, *args, **kwargs)
+
+@login_required
+def DiaryBackup(request):
+    message = []
+    rc_code = None
+    date = datetime.date.today().strftime('%Y%m%d')
+    cmd = 'python manage.py backup_diary'
+    rc_code = subprocess.call(cmd, shell=True)
+    if rc_code == 0:
+        message = 'バックアップが正常終了しました。'
+        backup_name = 'backupdiary' + date + '.csv'
+    else:
+        message = 'バックアップが異常終了しました。'
+    return render(request, 'result.html', {'message': message, 'backup_name': backup_name})

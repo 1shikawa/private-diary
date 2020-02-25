@@ -43,6 +43,9 @@
                   <li class="nav-item {% block active_diary_list %}{% endblock %}">
                       <a class="nav-link" href="{% url 'diary:diary_list' %}">DIARY LIST</a>
                   </li>
+                  <li class="nav-item {% block active_backup %}{% endblock %}">
+                      <a class="nav-link" href="{% url 'diary:diary_backup' %}">BACKUP</a>
+                  </li>
                 {% endif %}
               </ul>
               <ul class="navbar-nav ml-auto">
